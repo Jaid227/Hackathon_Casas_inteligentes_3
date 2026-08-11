@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoEnergy - Gestor de Eficiencia Energética</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f7fb;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .brand-icon {
+            font-size: 2rem;
+        }
+
+        .brand-text {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-nav {
+            padding: 0.6rem 1.5rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #4facfe;
+            transform: translateY(-2px);
+        }
+
+        .btn-nav.active {
+            background: #4facfe;
+            border-color: #4facfe;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+        }
+
+        /* Login Section */
+        #loginSection {
+            max-width: 500px;
+            margin: 3rem auto;
+        }
+
+        .login-container {
+            margin-top: 1.5rem;
+        }
+
+        .login-users {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fc;
+            border-radius: 12px;
+        }
+
+        .login-users h4 {
+            color: #4a4a6a;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .user-avatars {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .user-avatar {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid #e1e5ed;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar:hover {
+            border-color: #4facfe;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .user-avatar .remove-user {
+            color: #ff6b6b;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 0.3rem;
+        }
+
+        .user-avatar .remove-user:hover {
+            color: #ee5a24;
+        }
+
+        /* Formulario por pasos */
+        .step-indicators {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step-indicators::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e1e5ed;
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #e1e5ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #4a4a6a;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .step-dot.active {
+            border-color: #4facfe;
+            background: #4facfe;
+            color: white;
+        }
+
+        .step-dot.completed {
+            border-color: #00b894;
+            background: #00b894;
+            color: white;
+        }
+
+        .step-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .step-navigation button {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .step-navigation .btn-prev {
+            background: #e8edf5;
+            color: #1a1a2e;
+        }
+
+        .step-navigation .btn-prev:hover {
+            background: #d5dde8;
+        }
+
+        .step-navigation .btn-next {
+            background: #4facfe;
+            color: white;
+        }
+
+        .step-navigation .btn-next:hover {
+            background: #3d8fd9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .step-navigation .btn-submit {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .step-navigation .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 206, 201, 0.3);
+        }
+
+        /* Formulario */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4a4a6a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.8rem 1rem;
+            border: 2px solid #e1e5ed;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #f8f9fc;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
+            background: white;
+        }
+
+        /* Tooltips */
+        .tooltip-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4facfe;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: help;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .tooltip-trigger:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: #1a1a2e;
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            width: 300px;
+            text-align: left;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            line-height: 1.5;
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: #1a1a2e;
+        }
+
+        /* Botones */
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e8edf5;
+            color: #1a1a2e;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dde8;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a24;
+            transform: translateY(-2px);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #e1e5ed;
+            background: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #4a4a6a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            background: #f0f4ff;
+            border-color: #4facfe;
+        }
+
+        .tab-btn.active {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* User Header */
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: #e8edf5;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4a4a6a;
+        }
+
+        /* Tabla */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fc;
+            border-bottom: 2px solid #e1e5ed;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: #4a4a6a;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        tr:hover {
+            background: #f8f9fc;
+        }
+
+        /* Análisis Grid */
+        .analisis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .analisis-card {
+            background: #f8f9fc;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .analisis-card h4 {
+            margin-bottom: 1rem;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .analisis-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+        }
+
+        /* Recomendaciones */
+        #recomendacionesContainer {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .recomendacion-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8f9fc;
+            border-radius: 16px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .recomendacion-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .recomendacion-content h4 {
+            margin-bottom: 0.3rem;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recomendacion-content p {
+            color: #4a4a6a;
+        }
+
+        /* Comparativa */
+        .comparativa-resultado {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e1e5ed;
+        }
+
+        /* Badge de eficiencia */
+        .eficiencia-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .eficiencia-badge.excelente {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .eficiencia-badge.bueno {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .eficiencia-badge.regular {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .eficiencia-badge.malo {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #f8f9fc;
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1a2e;
+        }
+
+        .stat-card .label {
+            color: #4a4a6a;
+            font-size: 0.9rem;
+        }
+
+        /* Sección de ayuda técnica */
+        .tecnico-help {
+            background: #f0f4ff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid #6c5ce7;
+        }
+
+        .tecnico-help h4 {
+            color: #6c5ce7;
+            margin-bottom: 0.5rem;
+        }
+
+        .tecnico-help ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tecnico-help ul li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .tecnico-help ul li::before {
+            content: '🔧';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .analisis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .nav-brand {
+                font-size: 1.2rem;
+            }
+            
+            .btn-nav {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .tabs {
+                gap: 0.3rem;
+            }
+            
+            .tab-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .user-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .user-info {
+                justify-content: center;
+            }
+
+            .step-indicators {
+                gap: 0.5rem;
+            }
+
+            .step-dot {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+
+            .tooltip-content {
+                width: 200px;
+                left: auto;
+                right: -50%;
+                transform: translateX(0) translateY(-10px);
+            }
+
+            .tooltip-content::after {
+                left: 70%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .step-navigation {
+                flex-direction: column;
+            }
+
+            .step-navigation button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">Hackathon</span>
+            </div>
+            <div class="nav-links">
+                <button class="btn-nav active" id="btnUsuario" onclick="cambiarRol('usuario')">👤 Usuario</button>
+                <button class="btn-nav" id="btnTecnico" onclick="cambiarRol('tecnico')">🔧 Técnico</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sección de Login -->
+        <div id="loginSection" class="card">
+            <h2>🔐 Iniciar Sesión</h2>
+            <div class="login-container">
+                <div class="form-group">
+                    <label for="username">Nombre de Usuario</label>
+                    <input type="text" id="username" placeholder="Ingresa tu nombre de usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                <button class="btn-primary" onclick="login()">Iniciar Sesión</button>
+                <button class="btn-register" onclick="registrarUsuario()">📝 Registrarse</button>
+                
+                <div class="login-users" id="usuariosGuardados">
+                    <h4>👥 Usuarios registrados:</h4>
+                    <div class="user-avatars" id="userAvatars">
+                        <!-- Usuarios cargados dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Principal (después del login) -->
+        <div id="mainSection" style="display: none;">
+            <!-- Header de usuario -->
+            <div class="user-header">
+                <div class="user-info">
+                    <h2 id="userNameDisplay">👤 Usuario</h2>
+                    <span class="role-badge" id="userRoleDisplay">Rol: Usuario</span>
+                </div>
+                <button class="btn-danger" onclick="logout()">Cerrar Sesión</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="number" id="totalRegistros">0</div>
+                    <div class="label">Total Registros</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="promedioConsumo">0</div>
+                    <div class="label">Consumo Promedio (kWh)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="mejorEficiencia">0</div>
+                    <div class="label">Mejor Eficiencia (kWh/m²)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="tendenciaEstado">➡️</div>
+                    <div class="label">Tendencia</div>
+                </div>
+            </div>
+
+            <!-- Tabs de navegación -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="changeTab('form')">
+                    📝 Formulario
+                    <span class="tooltip-trigger">
+                        ?
+                        <span class="tooltip-content">Completa el formulario por pasos para registrar tu consumo energético. Cada paso te guiará con información útil.</span>
+                    </span>
+                </button>
+                <button class="tab-btn" onclick="changeTab('historial')">
+                    📊 Historial
+                    <span class="tooltip-trigger">
+                        ?
+                        <span class="tooltip-content">Aquí verás todos tus registros anteriores ordenados por fecha. Cada registro muestra tu consumo y eficiencia.</span>
+                    </span>
+                </button>
+                <button class="tab-btn" onclick="changeTab('analisis')">
+                    📈 Análisis
+                    <span class="tooltip-trigger">
+                        ?
+                        <span class="tooltip-content">Visualiza tendencias de consumo, compara períodos y observa tu evolución en eficiencia energética.</span>
+                    </span>
+                </button>
+                <button class="tab-btn" onclick="changeTab('recomendaciones')">
+                    💡 Recomendaciones
+                    <span class="tooltip-trigger">
+                        ?
+                        <span class="tooltip-content">Recibe sugerencias personalizadas basadas en tus hábitos de consumo, ubicación y patrones estacionales.</span>
+                    </span>
+                </button>
+            </div>
+
+            <!-- Tab: Formulario -->
+            <div id="formTab" class="tab-content active">
+                <div class="card">
+                    <h3>
+                        📝 Formulario de Consumo Energético
+                        <span class="tooltip-trigger" style="margin-left: 0.5rem;">
+                            ?
+                            <span class="tooltip-content">Completa todos los pasos para registrar tu consumo. Los datos se guardarán en tu historial para análisis posteriores.</span>
+                        </span>
+                    </h3>
+                    
+                    <!-- Indicadores de pasos -->
+                    <div class="step-indicators">
+                        <div class="step-dot active" data-step="1" onclick="irPaso(1)">1</div>
+                        <div class="step-dot" data-step="2" onclick="irPaso(2)">2</div>
+                        <div class="step-dot" data-step="3" onclick="irPaso(3)">3</div>
+                        <div class="step-dot" data-step="4" onclick="irPaso(4)">4</div>
+                        <div class="step-dot" data-step="5" onclick="irPaso(5)">5</div>
+                    </div>
+
+                    <form id="consumoForm">
+                        <!-- Paso 1: Datos Personales -->
+                        <div class="step-content active" data-step="1">
+                            <h4>👤 Paso 1: Datos Personales</h4>
+                            <p style="color: #4a4a6a; margin-bottom: 1rem;">Cuéntanos quién eres y dónde te encuentras.</p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        Nombre Completo
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Ingresa tu nombre completo para identificar tus registros.</span>
+                                        </span>
+                                    </label>
+                                    <input type="text" id="nombre" placeholder="Tu nombre completo" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        Dirección
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">La dirección de tu vivienda o negocio para referencia.</span>
+                                        </span>
+                                    </label>
+                                    <input type="text" id="direccion" placeholder="Dirección de la vivienda">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        Latitud
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Coordenada de latitud para obtener información climática precisa.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="latitud" step="any" placeholder="-33.4567">
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        Longitud
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Coordenada de longitud para obtener información climática precisa.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="longitud" step="any" placeholder="-70.1234">
+                                </div>
+                                <div class="form-group" style="flex: 1; display: flex; align-items: flex-end;">
+                                    <button type="button" class="btn-secondary" onclick="obtenerUbicacion()" style="width: 100%;">
+                                        📍 Obtener ubicación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 2: Consumo y Espacio -->
+                        <div class="step-content" data-step="2">
+                            <h4>📏 Paso 2: Consumo y Espacio</h4>
+                            <p style="color: #4a4a6a; margin-bottom: 1rem;">Registra el consumo total y las características de tu espacio.</p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        1. Consumo kWh
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Consumo total de energía en kilovatios-hora. Lo encuentras en tu factura eléctrica.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="consumo_kwh" step="0.01" placeholder="Ej: 250" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        4. Superficie (m²)
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Área total de tu vivienda o negocio en metros cuadrados.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="superficie_m2" step="0.01" placeholder="Ej: 120" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        10. Capacidad solar (kWp)
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Capacidad instalada de paneles solares en kilovatios pico. Si no tienes, deja en 0.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="capacidad_solar_kwp" step="0.01" placeholder="Ej: 3.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        13. Tiene paneles solares
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Indica si tu propiedad cuenta con paneles solares instalados.</span>
+                                        </span>
+                                    </label>
+                                    <select id="tiene_paneles_solares" required>
+                                        <option value="true">Sí</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 3: Equipos y Consumo -->
+                        <div class="step-content" data-step="3">
+                            <h4>🔌 Paso 3: Equipos y Consumo</h4>
+                            <p style="color: #4a4a6a; margin-bottom: 1rem;">Cuéntanos sobre tus equipos y hábitos de consumo.</p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        2. Cantidad de equipos
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Número total de equipos eléctricos en tu hogar o negocio.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="cantidad_equipos" placeholder="Ej: 15" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        5. Cantidad de A/C
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Número de aires acondicionados que tienes instalados.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="aires_acondicionados" placeholder="Ej: 2" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        3. Horas alto consumo
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Horas al día en las que más energía consumes (ej: tarde-noche).</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="horas_alto_consumo" placeholder="Ej: 4" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        12. Uso horario pico
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Indica si tu consumo principal ocurre en horas de mayor demanda eléctrica.</span>
+                                        </span>
+                                    </label>
+                                    <select id="uso_horario_pico" required>
+                                        <option value="true">Sí</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 4: Eficiencia y Tecnología -->
+                        <div class="step-content" data-step="4">
+                            <h4>💡 Paso 4: Eficiencia y Tecnología</h4>
+                            <p style="color: #4a4a6a; margin-bottom: 1rem;">Cuéntanos sobre la eficiencia de tus equipos y tecnología.</p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        6. Factor de potencia
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Indica la eficiencia eléctrica. Entre 0.7 y 1.0, idealmente cerca de 0.95.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="factor_potencia" step="0.01" placeholder="Ej: 0.95" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        7. % Iluminación LED
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Porcentaje de luminarias LED vs tradicionales. Mayor porcentaje = mayor eficiencia.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pct_iluminacion_led" placeholder="Ej: 80" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        8. % Equipos inteligentes
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Porcentaje de equipos con tecnología inteligente (ej: termostatos, enchufes WiFi).</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pct_equipos_inteligentes" placeholder="Ej: 40" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        9. Antigüedad promedio ponderada
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Edad promedio de tus equipos en años. Equipos más nuevos suelen ser más eficientes.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="antiguedad_promedio_ponderada" step="0.1" placeholder="Ej: 5.5" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 5: Categorías y Finalización -->
+                        <div class="step-content" data-step="5">
+                            <h4>🏷️ Paso 5: Categorías y Finalización</h4>
+                            <p style="color: #4a4a6a; margin-bottom: 1rem;">Clasifica tu propiedad y confirma los datos.</p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        14. Tipo de inmueble
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Clasifica tu propiedad según su uso principal.</span>
+                                        </span>
+                                    </label>
+                                    <select id="tipo_inmueble" required>
+                                        <option value="Residencial">Residencial</option>
+                                        <option value="Comercial">Comercial</option>
+                                        <option value="Industrial">Industrial</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        15. Región
+                                        <span class="tooltip-trigger">
+                                            ?
+                                            <span class="tooltip-content">Región geográfica donde se encuentra tu propiedad.</span>
+                                        </span>
+                                    </label>
+                                    <select id="region_pais" required>
+                                        <option value="Norte">Norte</option>
+                                        <option value="Centro">Centro</option>
+                                        <option value="Sur">Sur</option>
+                                        <option value="Oriente">Oriente</option>
+                                        <option value="Occidente">Occidente</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="background: #f8f9fc; padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+                                <p style="color: #4a4a6a; font-weight: 600;">✅ Resumen:</p>
+                                <p id="resumenDatos" style="color: #666; font-size: 0.9rem;"></p>
+                            </div>
+                        </div>
+
+                        <!-- Navegación de pasos -->
+                        <div class="step-navigation">
+                            <button type="button" class="btn-prev" id="btnPrev" onclick="pasoAnterior()">⬅ Anterior</button>
+                            <button type="button" class="btn-next" id="btnNext" onclick="pasoSiguiente()">Siguiente ➡</button>
+                            <button type="button" class="btn-submit" id="btnSubmit" style="display: none;" onclick="guardarAnalisis()">💾 Guardar Análisis</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab: Historial -->
+            <div id="historialTab" class="tab-content">
+                <div class="card">
+                    <h3>
+                        📊 Historial de Consumos
+                        <span class="tooltip-trigger" style="margin-left: 0.5rem;">
+                            ?
+                            <span class="tooltip-content">Aquí puedes ver todos tus registros anteriores. Los colores indican tu nivel de eficiencia energética.</span>
+                        </span>
+                    </h3>
+                    <div class="table-container">
+                        <table id="historialTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Consumo (kWh)</th>
+                                    <th>Superficie (m²)</th>
+                                    <th>kWh/m²</th>
+                                    <th>Tipo</th>
+                                    <th>Región</th>
+                                    <th>Eficiencia</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historialBody">
+                                <!-- Datos cargados dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Análisis -->
+            <div id="analisisTab" class="tab-content">
+                <div class="card">
+                    <h3>
+                        📈 Análisis de Tendencias
+                        <span class="tooltip-trigger" style="margin-left: 0.5rem;">
+                            ?
+                            <span class="tooltip-content">Visualiza tu evolución en el tiempo. El gráfico muestra tu consumo y eficiencia.</span>
+                        </span>
+                    </h3>
+                    <div class="analisis-grid">
+                        <div class="analisis-card">
+                            <h4>
+                                Evolución Mensual
+                                <span class="tooltip-trigger">
+                                    ?
+                                    <span class="tooltip-content">Gráfico interactivo que muestra cómo ha cambiado tu consumo y eficiencia a lo largo del tiempo.</span>
+                                </span>
+                            </h4>
+                            <canvas id="tendenciaChart"></canvas>
+                            <div id="tendenciaInfo" class="analisis-info"></div>
+                        </div>
+                        <div class="analisis-card">
+                            <h4>
+                                Comparativa Antes/Después
+                                <span class="tooltip-trigger">
+                                    ?
+                                    <span class="tooltip-content">Compara dos fechas específicas para ver cómo ha cambiado tu consumo y eficiencia.</span>
+                                </span>
+                            </h4>
+                            <div id="comparativaInfo" class="analisis-info">
+                                <p>Selecciona dos fechas para comparar</p>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Fecha Antes</label>
+                                    <input type="date" id="fechaAntes">
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha Después</label>
+                                    <input type="date" id="fechaDespues">
+                                </div>
+                            </div>
+                            <button class="btn-secondary" onclick="compararAntesDespues()">Comparar</button>
+                            <div id="comparativaResultado" class="comparativa-resultado"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Recomendaciones -->
+            <div id="recomendacionesTab" class="tab-content">
+                <div class="card">
+                    <h3>
+                        💡 Recomendaciones Personalizadas
+                        <span class="tooltip-trigger" style="margin-left: 0.5rem;">
+                            ?
+                            <span class="tooltip-content">Sugerencias específicas para mejorar tu eficiencia energética basadas en tus datos.</span>
+                        </span>
+                    </h3>
+                    <div id="recomendacionesContainer">
+                        <div class="recomendacion-item">
+                            <div class="recomendacion-icon">🌡️</div>
+                            <div class="recomendacion-content">
+                                <h4>
+                                    Optimización por Clima
+                                    <span class="tooltip-trigger">
+                                        ?
+                                        <span class="tooltip-content">Recomendaciones basadas en tu ubicación y condiciones climáticas actuales.</span>
+                                    </span>
+                                </h4>
+                                <p id="climaRecomendacion">Analizando tu ubicación y consumo...</p>
+                            </div>
+                        </div>
+                        <div class="recomendacion-item">
+                            <div class="recomendacion-icon">💡</div>
+                            <div class="recomendacion-content">
+                                <h4>
+                                    Eficiencia Energética
+                                    <span class="tooltip-trigger">
+                                        ?
+                                        <span class="tooltip-content">Sugerencias para mejorar tu eficiencia basadas en tus hábitos de consumo.</span>
+                                    </span>
+                                </h4>
+                                <p id="eficienciaRecomendacion">Basado en tus hábitos de consumo...</p>
+                            </div>
+                        </div>
+                        <div class="recomendacion-item">
+                            <div class="recomendacion-icon">📊</div>
+                            <div class="recomendacion-content">
+                                <h4>
+                                    Tendencias Estacionales
+                                    <span class="tooltip-trigger">
+                                        ?
+                                        <span class="tooltip-content">Análisis de patrones de consumo según la época del año.</span>
+                                    </span>
+                                </h4>
+                                <p id="estacionalRecomendacion">Patrones de consumo según temporada...</p>
+                            </div>
+                        </div>
+                        <div class="recomendacion-item">
+                            <div class="recomendacion-icon">🏠</div>
+                            <div class="recomendacion-content">
+                                <h4>
+                                    Acciones Recomendadas
+                                    <span class="tooltip-trigger">
+                                        ?
+                                        <span class="tooltip-content">Pasos concretos que puedes tomar para optimizar tu consumo energético.</span>
+                                    </span>
+                                </h4>
+                                <p id="accionesRecomendacion">Basado en tu perfil de consumo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN Y ESTADO GLOBAL
+        // ============================================
+
+        const APP_STATE = {
+            usuarioActual: null,
+            rol: 'usuario',
+            historial: [],
+            chartInstance: null,
+            pasoActual: 1,
+            totalPasos: 5
+        };
+
+        // ============================================
+        // GESTIÓN DE USUARIOS
+        // ============================================
+
+        function getUsuarios() {
+            return JSON.parse(localStorage.getItem('ecoUsers') || '[]');
+        }
+
+        function saveUsuarios(usuarios) {
+            localStorage.setItem('ecoUsers', JSON.stringify(usuarios));
+        }
+
+        function registrarUsuario() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                alert('Por favor ingresa un nombre de usuario y contraseña');
+                return;
+            }
+            
+            if (username.length < 3) {
+                alert('El nombre de usuario debe tener al menos 3 caracteres');
+                return;
+            }
+            
+            if (password.length < 4) {
+                alert('La contraseña debe tener al menos 4 caracteres');
+                return;
+            }
+            
+            const usuarios = getUsuarios();
+            
+            // Verificar si ya existe
+            if (usuarios.find(u => u.username === username)) {
+                alert('⚠️ Este usuario ya existe. Por favor elige otro nombre.');
+                return;
+            }
+            
+            // Limitar a 3 usuarios
+            if (usuarios.length >= 3) {
+                alert('⚠️ Solo se permiten 3 usuarios registrados. Elimina uno para registrar nuevo.');
+                return;
+            }
+            
+            usuarios.push({ username, password });
+            saveUsuarios(usuarios);
+            mostrarUsuariosGuardados();
+            
+            alert('✅ Usuario registrado exitosamente. Ahora puedes iniciar sesión.');
+            document.getElementById('password').value = '';
+            document.getElementById('password').focus();
+        }
+
+        function mostrarUsuariosGuardados() {
+            const usuarios = getUsuarios();
+            const container = document.getElementById('userAvatars');
+            container.innerHTML = '';
+            
+            if (usuarios.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-size: 0.9rem;">No hay usuarios registrados aún</p>';
+                return;
+            }
+            
+            usuarios.forEach((user, index) => {
+                const div = document.createElement('div');
+                div.className = 'user-avatar';
+                div.innerHTML = `
+                    👤 ${user.username}
+                    <span class="remove-user" onclick="eliminarUsuario(${index})">✕</span>
+                `;
+                div.onclick = function(e) {
+                    if (!e.target.classList.contains('remove-user')) {
+                        document.getElementById('username').value = user.username;
+                        document.getElementById('password').value = user.password;
+                        setTimeout(() => login(), 100);
+                    }
+                };
+                container.appendChild(div);
+            });
+        }
+
+        function eliminarUsuario(index) {
+            if (confirm('¿Seguro que quieres eliminar este usuario?')) {
+                const usuarios = getUsuarios();
+                usuarios.splice(index, 1);
+                saveUsuarios(usuarios);
+                mostrarUsuariosGuardados();
+            }
+        }
+
+        // ============================================
+        // AUTENTICACIÓN
+        // ============================================
+
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                alert('Por favor ingresa usuario y contraseña');
+                return;
+            }
+            
+            const usuarios = getUsuarios();
+            const user = usuarios.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                APP_STATE.usuarioActual = username;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainSection').style.display = 'block';
+                document.getElementById('userNameDisplay').textContent = `👤 ${username}`;
+                
+                cargarHistorialUsuario(username);
+                iniciarRecomendaciones();
+                actualizarStats();
+                resetearPasos();
+                
+                // Mostrar mensaje de bienvenida
+                const bienvenida = document.createElement('div');
+                bienvenida.style.cssText = 'background: #d4edda; color: #155724; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; text-align: center;';
+                bienvenida.textContent = '✅ ¡Bienvenido! Completa el formulario para empezar a monitorear tu eficiencia energética.';
+                const formTab = document.getElementById('formTab');
+                formTab.insertBefore(bienvenida, formTab.firstChild);
+                setTimeout(() => bienvenida.remove(), 5000);
+            } else {
+                alert('❌ Usuario o contraseña incorrectos');
+            }
+        }
+
+        function logout() {
+            APP_STATE.usuarioActual = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainSection').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('username').focus();
+        }
+
+        function cambiarRol(rol) {
+            APP_STATE.rol = rol;
+            document.getElementById('userRoleDisplay').textContent = `Rol: ${rol.charAt(0).toUpperCase() + rol.slice(1)}`;
+            
+            document.getElementById('btnUsuario').classList.toggle('active', rol === 'usuario');
+            document.getElementById('btnTecnico').classList.toggle('active', rol === 'tecnico');
+            
+            if (rol === 'tecnico') {
+                mostrarVistaTecnico();
+            } else {
+                mostrarVistaUsuario();
+            }
+        }
+
+        // ============================================
+        // NAVEGACIÓN POR PASOS
+        // ============================================
+
+        function irPaso(paso) {
+            if (paso < 1 || paso > APP_STATE.totalPasos) return;
+            
+            // Validar paso actual antes de avanzar
+            if (paso > APP_STATE.pasoActual) {
+                if (!validarPaso(APP_STATE.pasoActual)) {
+                    return;
+                }
+            }
+            
+            APP_STATE.pasoActual = paso;
+            actualizarPasos();
+        }
+
+        function pasoAnterior() {
+            if (APP_STATE.pasoActual > 1) {
+                APP_STATE.pasoActual--;
+                actualizarPasos();
+            }
+        }
+
+        function pasoSiguiente() {
+            if (!validarPaso(APP_STATE.pasoActual)) {
+                return;
+            }
+            
+            if (APP_STATE.pasoActual < APP_STATE.totalPasos) {
+                APP_STATE.pasoActual++;
+                actualizarPasos();
+            }
+        }
+
+        function validarPaso(paso) {
+            const stepContent = document.querySelector(`.step-content[data-step="${paso}"]`);
+            if (!stepContent) return true;
+            
+            const inputs = stepContent.querySelectorAll('input[required], select[required]');
+            let valid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value || input.value.trim() === '') {
+                    input.style.borderColor = '#ff6b6b';
+                    valid = false;
+                } else {
+                    input.style.borderColor = '#e1e5ed';
+                }
+            });
+            
+            if (!valid) {
+                alert('⚠️ Por favor completa todos los campos requeridos en este paso.');
+            }
+            
+            return valid;
+        }
+
+        function actualizarPasos() {
+            // Actualizar dots
+            document.querySelectorAll('.step-dot').forEach(dot => {
+                const step = parseInt(dot.dataset.step);
+                dot.classList.remove('active', 'completed');
+                if (step === APP_STATE.pasoActual) {
+                    dot.classList.add('active');
+                } else if (step < APP_STATE.pasoActual) {
+                    dot.classList.add('completed');
+                }
+            });
+            
+            // Actualizar contenido
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+                const step = parseInt(content.dataset.step);
+                if (step === APP_STATE.pasoActual) {
+                    content.classList.add('active');
+                }
+            });
+            
+            // Actualizar botones
+            document.getElementById('btnPrev').style.display = APP_STATE.pasoActual > 1 ? 'block' : 'none';
+            document.getElementById('btnNext').style.display = APP_STATE.pasoActual < APP_STATE.totalPasos ? 'block' : 'none';
+            document.getElementById('btnSubmit').style.display = APP_STATE.pasoActual === APP_STATE.totalPasos ? 'block' : 'none';
+            
+            // Actualizar resumen si estamos en el último paso
+            if (APP_STATE.pasoActual === APP_STATE.totalPasos) {
+                actualizarResumen();
+            }
+        }
+
+        function actualizarResumen() {
+            const datos = {
+                nombre: document.getElementById('nombre').value || 'No especificado',
+                consumo: document.getElementById('consumo_kwh').value || 'No especificado',
+                superficie: document.getElementById('superficie_m2').value || 'No especificado',
+                equipos: document.getElementById('cantidad_equipos').value || 'No especificado',
+                ac: document.getElementById('aires_acondicionados').value || 'No especificado',
+                tipo: document.getElementById('tipo_inmueble').value || 'No especificado',
+                region: document.getElementById('region_pais').value || 'No especificado'
+            };
+            
+            document.getElementById('resumenDatos').innerHTML = `
+                👤 <strong>Nombre:</strong> ${datos.nombre} | 
+                🏠 <strong>Inmueble:</strong> ${datos.tipo} | 
+                📍 <strong>Región:</strong> ${datos.region}<br>
+                ⚡ <strong>Consumo:</strong> ${datos.consumo} kWh | 
+                📏 <strong>Superficie:</strong> ${datos.superficie} m² | 
+                🔌 <strong>Equipos:</strong> ${datos.equipos} | 
+                ❄️ <strong>A/C:</strong> ${datos.ac}
+            `;
+        }
+
+        function resetearPasos() {
+            APP_STATE.pasoActual = 1;
+            actualizarPasos();
+        }
+
+        // ============================================
+        // UBICACIÓN Y CLIMA
+        // ============================================
+
+        function obtenerUbicacion() {
+            if (!navigator.geolocation) {
+                alert('Tu navegador no soporta geolocalización');
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('latitud').value = position.coords.latitude.toFixed(6);
+                    document.getElementById('longitud').value = position.coords.longitude.toFixed(6);
+                    
+                    obtenerClimaPorUbicacion(position.coords.latitude, position.coords.longitude);
+                },
+                function(error) {
+                    alert('Error al obtener ubicación: ' + error.message);
+                }
+            );
+        }
+
+        function obtenerClimaPorUbicacion(lat, lon) {
+            const climas = ['Soleado', 'Nublado', 'Lluvioso', 'Caluroso', 'Frío'];
+            const temperaturas = [15, 20, 25, 30, 35];
+            
+            const clima = climas[Math.floor(Math.random() * climas.length)];
+            const temp = temperaturas[Math.floor(Math.random() * temperaturas.length)];
+            
+            let climaInput = document.getElementById('climaActual');
+            if (!climaInput) {
+                climaInput = document.createElement('input');
+                climaInput.type = 'hidden';
+                climaInput.id = 'climaActual';
+                document.getElementById('consumoForm').appendChild(climaInput);
+            }
+            climaInput.value = JSON.stringify({ clima, temperatura: temp });
+            
+            mostrarRecomendacionClimatica(clima, temp);
+            
+            alert(`🌤️ Clima actual: ${clima} - ${temp}°C\nSe ha registrado la información climática.`);
+        }
+
+        function mostrarRecomendacionClimatica(clima, temp) {
+            let recomendacion = '';
+            if (temp > 28) {
+                recomendacion = '🔴 Alta temperatura detectada. Se recomienda optimizar el uso de aire acondicionado y mantener termostatos en 24°C.';
+            } else if (temp < 10) {
+                recomendacion = '🔵 Bajas temperaturas. Revisar aislamiento térmico para reducir consumo de calefacción.';
+            } else {
+                recomendacion = '✅ Temperatura moderada. Buen momento para optimizar el consumo energético.';
+            }
+            
+            document.getElementById('climaRecomendacion').textContent = recomendacion;
+        }
+
+        // ============================================
+        // FORMULARIO Y GUARDADO
+        // ============================================
+
+        function guardarAnalisis() {
+            // Validar todos los pasos
+            for (let i = 1; i <= APP_STATE.totalPasos; i++) {
+                if (!validarPaso(i)) {
+                    APP_STATE.pasoActual = i;
+                    actualizarPasos();
+                    alert('⚠️ Por favor completa todos los campos requeridos.');
+                    return;
+                }
+            }
+            
+            const formData = {
+                id: Date.now().toString(),
+                usuario: APP_STATE.usuarioActual,
+                fecha: new Date().toISOString(),
+                nombre: document.getElementById('nombre').value,
+                direccion: document.getElementById('direccion').value,
+                latitud: parseFloat(document.getElementById('latitud').value) || null,
+                longitud: parseFloat(document.getElementById('longitud').value) || null,
+                
+                consumo_kwh: parseFloat(document.getElementById('consumo_kwh').value),
+                cantidad_equipos: parseInt(document.getElementById('cantidad_equipos').value),
+                horas_alto_consumo: parseInt(document.getElementById('horas_alto_consumo').value),
+                superficie_m2: parseFloat(document.getElementById('superficie_m2').value),
+                aires_acondicionados: parseInt(document.getElementById('aires_acondicionados').value),
+                factor_potencia: parseFloat(document.getElementById('factor_potencia').value),
+                pct_iluminacion_led: parseFloat(document.getElementById('pct_iluminacion_led').value),
+                pct_equipos_inteligentes: parseFloat(document.getElementById('pct_equipos_inteligentes').value),
+                antiguedad_promedio_ponderada: parseFloat(document.getElementById('antiguedad_promedio_ponderada').value),
+                capacidad_solar_kwp: parseFloat(document.getElementById('capacidad_solar_kwp').value) || 0,
+                consumo_especifico_kwh_m2: 0,
+                
+                uso_horario_pico: document.getElementById('uso_horario_pico').value === 'true',
+                tiene_paneles_solares: document.getElementById('tiene_paneles_solares').value === 'true',
+                
+                tipo_inmueble: document.getElementById('tipo_inmueble').value,
+                region_pais: document.getElementById('region_pais').value
+            };
+            
+            if (formData.consumo_kwh <= 0 || formData.superficie_m2 <= 0) {
+                alert('El consumo y la superficie deben ser mayores a 0');
+                return;
+            }
+            
+            formData.consumo_especifico_kwh_m2 = formData.consumo_kwh / formData.superficie_m2;
+            
+            const historial = JSON.parse(localStorage.getItem('ecohistorico') || '[]');
+            historial.push(formData);
+            localStorage.setItem('ecohistorico', JSON.stringify(historial));
+            
+            APP_STATE.historial = historial.filter(item => item.usuario === APP_STATE.usuarioActual);
+            cargarHistorialUsuario(APP_STATE.usuarioActual);
+            actualizarAnalisis();
+            actualizarRecomendaciones(formData);
+            actualizarStats();
+            
+            alert('✅ Análisis guardado exitosamente');
+            document.getElementById('consumoForm').reset();
+            resetearPasos();
+            changeTab('historial');
+        }
+
+        // ============================================
+        // HISTORIAL
+        // ============================================
+
+        function cargarHistorialUsuario(usuario) {
+            const historial = JSON.parse(localStorage.getItem('ecohistorico') || '[]');
+            const historialUsuario = historial.filter(item => item.usuario === usuario);
+            APP_STATE.historial = historialUsuario;
+            mostrarHistorial(historialUsuario);
+        }
+
+        function mostrarHistorial(historial) {
+            const tbody = document.getElementById('historialBody');
+            tbody.innerHTML = '';
+            
+            if (historial.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999; padding: 2rem;">No hay registros aún. ¡Completa el formulario!</td></tr>';
+                return;
+            }
+            
+            historial.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            
+            historial.forEach(item => {
+                const fecha = new Date(item.fecha).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                let eficienciaClase = '';
+                let eficienciaTexto = '';
+                if (item.consumo_especifico_kwh_m2 < 2) {
+                    eficienciaClase = 'excelente';
+                    eficienciaTexto = '🟢 Excelente';
+                } else if (item.consumo_especifico_kwh_m2 < 4) {
+                    eficienciaClase = 'bueno';
+                    eficienciaTexto = '🟡 Bueno';
+                } else if (item.consumo_especifico_kwh_m2 < 6) {
+                    eficienciaClase = 'regular';
+                    eficienciaTexto = '🟠 Regular';
+                } else {
+                    eficienciaClase = 'malo';
+                    eficienciaTexto = '🔴 Malo';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fecha}</td>
+                    <td>${item.consumo_kwh.toFixed(1)}</td>
+                    <td>${item.superficie_m2.toFixed(1)}</td>
+                    <td>${item.consumo_especifico_kwh_m2.toFixed(2)}</td>
+                    <td>${item.tipo_inmueble}</td>
+                    <td>${item.region_pais}</td>
+                    <td><span class="eficiencia-badge ${eficienciaClase}">${eficienciaTexto}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ============================================
+        // ANÁLISIS Y TENDENCIAS
+        // ============================================
+
+        function actualizarAnalisis() {
+            if (APP_STATE.historial.length < 2) {
+                document.getElementById('tendenciaInfo').innerHTML = 'Se necesitan al menos 2 registros para mostrar tendencias';
+                return;
+            }
+            
+            const datos = [...APP_STATE.historial].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            const fechas = datos.map(d => new Date(d.fecha).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }));
+            const consumos = datos.map(d => d.consumo_kwh);
+            const especificos = datos.map(d => d.consumo_especifico_kwh_m2);
+            
+            crearGraficoTendencia(fechas, consumos, especificos);
+            calcularTendencia(datos);
+        }
+
+        function crearGraficoTendencia(fechas, consumos, especificos) {
+            const ctx = document.getElementById('tendenciaChart').getContext('2d');
+            
+            if (APP_STATE.chartInstance) {
+                APP_STATE.chartInstance.destroy();
+            }
+            
+            APP_STATE.chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: fechas,
+                    datasets: [
+                        {
+                            label: 'Consumo (kWh)',
+                            data: consumos,
+                            borderColor: '#4facfe',
+                            backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Eficiencia (kWh/m²)',
+                            data: especificos,
+                            borderColor: '#f093fb',
+                            backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    let value = context.parsed.y;
+                                    if (context.dataset.label.includes('Eficiencia')) {
+                                        return label + ': ' + value.toFixed(2) + ' kWh/m²';
+                                    }
+                                    return label + ': ' + value.toFixed(1) + ' kWh';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Consumo (kWh)'
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Eficiencia (kWh/m²)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calcularTendencia(datos) {
+            if (datos.length < 2) return;
+            
+            const ultimo = datos[datos.length - 1];
+            const primero = datos[0];
+            
+            const cambioConsumo = ((ultimo.consumo_kwh - primero.consumo_kwh) / primero.consumo_kwh) * 100;
+            const cambioEficiencia = ((ultimo.consumo_especifico_kwh_m2 - primero.consumo_especifico_kwh_m2) / primero.consumo_especifico_kwh_m2) * 100;
+            
+            let mensaje = '';
+            let emoji = '';
+            if (cambioConsumo < -5 && cambioEficiencia < -5) {
+                mensaje = '✅ Excelente mejora en eficiencia energética';
+                emoji = '📉';
+            } else if (cambioConsumo < 0 && cambioEficiencia < 0) {
+                mensaje = '📈 Buena tendencia. Sigue mejorando';
+                emoji = '📉';
+            } else if (cambioConsumo > 5 || cambioEficiencia > 5) {
+                mensaje = '⚠️ El consumo está aumentando. Revisa tus hábitos';
+                emoji = '📈';
+            } else {
+                mensaje = '➡️ Consumo estable. Busca oportunidades de mejora';
+                emoji = '➡️';
+            }
+            
+            document.getElementById('tendenciaInfo').innerHTML = `
+                <p><strong>${emoji} ${mensaje}</strong></p>
+                <p>Cambio en consumo: ${cambioConsumo > 0 ? '+' : ''}${cambioConsumo.toFixed(1)}%</p>
+                <p>Cambio en eficiencia: ${cambioEficiencia > 0 ? '+' : ''}${cambioEficiencia.toFixed(1)}%</p>
+                <p>Total registros: ${datos.length}</p>
+                <p>Periodo: ${new Date(datos[0].fecha).toLocaleDateString()} - ${new Date(datos[datos.length-1].fecha).toLocaleDateString()}</p>
+            `;
+        }
+
+        function compararAntesDespues() {
+            const fechaAntes = document.getElementById('fechaAntes').value;
+            const fechaDespues = document.getElementById('fechaDespues').value;
+            
+            if (!fechaAntes || !fechaDespues) {
+                alert('Selecciona ambas fechas');
+                return;
+            }
+            
+            const datos = APP_STATE.historial.filter(item => {
+                const fecha = new Date(item.fecha).toISOString().split('T')[0];
+                return fecha === fechaAntes || fecha === fechaDespues;
+            });
+            
+            if (datos.length !== 2) {
+                document.getElementById('comparativaResultado').innerHTML = '⚠️ No se encontraron registros en las fechas seleccionadas';
+                return;
+            }
+            
+            const antes = datos.find(d => new Date(d.fecha).toISOString().split('T')[0] === fechaAntes);
+            const despues = datos.find(d => new Date(d.fecha).toISOString().split('T')[0] === fechaDespues);
+            
+            const mejoraConsumo = ((despues.consumo_kwh - antes.consumo_kwh) / antes.consumo_kwh) * 100;
+            const mejoraEficiencia = ((despues.consumo_especifico_kwh_m2 - antes.consumo_especifico_kwh_m2) / antes.consumo_especifico_kwh_m2) * 100;
+            
+            const emoji = mejoraConsumo < 0 && mejoraEficiencia < 0 ? '✅' : '⚠️';
+            const mensaje = mejoraConsumo < 0 && mejoraEficiencia < 0 ? 
+                '¡Excelente mejora! El consumo ha disminuido' : 
+                'El consumo ha aumentado. Revisa las recomendaciones';
+            
+            const antesFecha = new Date(antes.fecha).toLocaleDateString('es-ES');
+            const despuesFecha = new Date(despues.fecha).toLocaleDateString('es-ES');
+            
+            document.getElementById('comparativaResultado').innerHTML = `
+                <h4>${emoji} Comparativa</h4>
+                <p><strong>Antes</strong> (${antesFecha}): ${antes.consumo_kwh} kWh - ${antes.consumo_especifico_kwh_m2.toFixed(2)} kWh/m²</p>
+                <p><strong>Después</strong> (${despuesFecha}): ${despues.consumo_kwh} kWh - ${despues.consumo_especifico_kwh_m2.toFixed(2)} kWh/m²</p>
+                <p><strong>${mensaje}</strong></p>
+                <p>Variación consumo: ${mejoraConsumo > 0 ? '+' : ''}${mejoraConsumo.toFixed(1)}%</p>
+                <p>Variación eficiencia: ${mejoraEficiencia > 0 ? '+' : ''}${mejoraEficiencia.toFixed(1)}%</p>
+                <hr>
+                <p style="font-size: 0.9rem; color: #666;">
+                    📌 ${mejoraConsumo < 0 ? 'El consumo disminuyó. ¡Sigue así!' : 'Considera implementar medidas de ahorro energético.'}
+                </p>
+            `;
+        }
+
+        // ============================================
+        // RECOMENDACIONES
+        // ============================================
+
+        function iniciarRecomendaciones() {
+            actualizarRecomendaciones(null);
+        }
+
+        function actualizarRecomendaciones(datos) {
+            const historial = APP_STATE.historial;
+            if (historial.length > 0) {
+                const ultimo = historial[historial.length - 1];
+                const eficiencia = ultimo.consumo_especifico_kwh_m2;
+                
+                let recomendacion = '';
+                let acciones = '';
+                
+                if (eficiencia < 2) {
+                    recomendacion = '🟢 Excelente eficiencia. Mantén buenas prácticas como usar iluminación LED y equipos eficientes.';
+                    acciones = '✅ Sigue manteniendo estos buenos hábitos. Considera compartir tus prácticas con otros usuarios.';
+                } else if (eficiencia < 4) {
+                    recomendacion = '🟡 Eficiencia moderada. Considera actualizar equipos antiguos y mejorar aislamiento térmico.';
+                    acciones = '🔧 Revisa el estado de tus electrodomésticos. Los equipos con más de 10 años pueden ser ineficientes.';
+                } else {
+                    recomendacion = '🔴 Alta ineficiencia. Se recomienda auditoría energética y reemplazo de equipos ineficientes.';
+                    acciones = '📋 Programa una auditoría energética profesional. El ahorro potencial puede ser significativo.';
+                }
+                document.getElementById('eficienciaRecomendacion').textContent = recomendacion;
+                document.getElementById('accionesRecomendacion').textContent = acciones;
+                
+                if (ultimo.aires_acondicionados > 0) {
+                    const recomAC = `💨 Tienes ${ultimo.aires_acondicionados} aire(s) acondicionado(s). Mantén los filtros limpios y la temperatura en 24°C para optimizar consumo.`;
+                    document.getElementById('climaRecomendacion').textContent = recomAC;
+                }
+            }
+            
+            const estacionalidad = calcularEstacionalidad(historial);
+            document.getElementById('estacionalRecomendacion').textContent = estacionalidad;
+        }
+
+        function calcularEstacionalidad(historial) {
+            if (historial.length < 3) {
+                return 'Se necesitan más datos para analizar patrones estacionales. Continúa registrando consumos.';
+            }
+            
+            const meses = {};
+            historial.forEach(item => {
+                const mes = new Date(item.fecha).getMonth();
+                if (!meses[mes]) meses[mes] = [];
+                meses[mes].push(item.consumo_kwh);
+            });
+            
+            const promedios = {};
+            for (const [mes, consumos] of Object.entries(meses)) {
+                promedios[mes] = consumos.reduce((a, b) => a + b, 0) / consumos.length;
+            }
+            
+            const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            let maxConsumo = 0;
+            let mesMax = '';
+            let minConsumo = Infinity;
+            let mesMin = '';
+            
+            for (const [mes, promedio] of Object.entries(promedios)) {
+                if (promedio > maxConsumo) {
+                    maxConsumo = promedio;
+                    mesMax = mesesNombres[parseInt(mes)];
+                }
+                if (promedio < minConsumo) {
+                    minConsumo = promedio;
+                    mesMin = mesesNombres[parseInt(mes)];
+                }
+            }
+            
+            return `📊 Patrón estacional detectado: Mayor consumo en ${mesMax} (${maxConsumo.toFixed(1)} kWh) y menor en ${mesMin} (${minConsumo.toFixed(1)} kWh). ${mesMax.includes('Jun') || mesMax.includes('Jul') || mesMax.includes('Ago') ? 'Considera revisar uso de climatización en verano.' : 'Revisa hábitos en temporada de frío.'}`;
+        }
+
+        // ============================================
+        // STATS
+        // ============================================
+
+        function actualizarStats() {
+            const historial = APP_STATE.historial;
+            
+            document.getElementById('totalRegistros').textContent = historial.length;
+            
+            if (historial.length === 0) {
+                document.getElementById('promedioConsumo').textContent = '0';
+                document.getElementById('mejorEficiencia').textContent = '0';
+                document.getElementById('tendenciaEstado').textContent = '➡️';
+                return;
+            }
+            
+            const promedio = historial.reduce((a, b) => a + b.consumo_kwh, 0) / historial.length;
+            document.getElementById('promedioConsumo').textContent = promedio.toFixed(1);
+            
+            const mejorEficiencia = Math.min(...historial.map(i => i.consumo_especifico_kwh_m2));
+            document.getElementById('mejorEficiencia').textContent = mejorEficiencia.toFixed(2);
+            
+            if (historial.length >= 2) {
+                const sorted = [...historial].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                const primero = sorted[0];
+                const ultimo = sorted[sorted.length - 1];
+                const cambio = ((ultimo.consumo_kwh - primero.consumo_kwh) / primero.consumo_kwh) * 100;
+                
+                let emoji = '➡️';
+                if (cambio < -5) emoji = '📉';
+                else if (cambio > 5) emoji = '📈';
+                document.getElementById('tendenciaEstado').textContent = emoji;
+            }
+        }
+
+        // ============================================
+        // VISTAS ROLES
+        // ============================================
+
+        function mostrarVistaUsuario() {
+            const historial = APP_STATE.historial;
+            mostrarHistorial(historial);
+            actualizarAnalisis();
+            iniciarRecomendaciones();
+            actualizarStats();
+        }
+
+        function mostrarVistaTecnico() {
+            const todos = JSON.parse(localStorage.getItem('ecohistorico') || '[]');
+            const historialUsuario = todos.filter(item => item.usuario === APP_STATE.usuarioActual);
+            mostrarHistorial(historialUsuario);
+            actualizarAnalisis();
+            iniciarRecomendaciones();
+            actualizarStats();
+            
+            const totalUsuarios = new Set(todos.map(item => item.usuario)).size;
+            const totalRegistros = todos.length;
+            
+            // Añadir información técnica
+            let infoExtra = document.getElementById('tecnicoInfo');
+            if (!infoExtra) {
+                infoExtra = document.createElement('div');
+                infoExtra.id = 'tecnicoInfo';
+                infoExtra.className = 'tecnico-help';
+                document.getElementById('analisisTab').appendChild(infoExtra);
+            }
+            
+            infoExtra.innerHTML = `
+                <h4>🔧 Información para Técnicos</h4>
+                <ul>
+                    <li><strong>Usuarios totales:</strong> ${totalUsuarios}</li>
+                    <li><strong>Registros totales:</strong> ${totalRegistros}</li>
+                    <li><strong>Promedio consumo general:</strong> ${totalRegistros > 0 ? (todos.reduce((a, b) => a + b.consumo_kwh, 0) / totalRegistros).toFixed(1) : 0} kWh</li>
+                    <li><strong>Usuarios activos:</strong> ${todos.filter((v, i, a) => a.findIndex(t => t.usuario === v.usuario) === i).length}</li>
+                    <li><strong>Mayor consumo registrado:</strong> ${todos.length > 0 ? Math.max(...todos.map(i => i.consumo_kwh)).toFixed(1) : 0} kWh</li>
+                    <li><strong>Mejor eficiencia registrada:</strong> ${todos.length > 0 ? Math.min(...todos.map(i => i.consumo_especifico_kwh_m2)).toFixed(2) : 0} kWh/m²</li>
+                </ul>
+                <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">
+                    💡 Los datos muestran tendencias de consumo que pueden ayudar a identificar oportunidades de mejora.
+                </p>
+            `;
+        }
+
+        // ============================================
+        // NAVEGACIÓN POR TABS
+        // ============================================
+
+        function changeTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const tabMap = {
+                'form': 'formTab',
+                'historial': 'historialTab',
+                'analisis': 'analisisTab',
+                'recomendaciones': 'recomendacionesTab'
+            };
+            
+            const tabId = tabMap[tabName];
+            if (tabId) {
+                document.getElementById(tabId).classList.add('active');
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const btnText = btn.textContent.trim().toLowerCase();
+                if (btnText.includes(tabName)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            if (tabName === 'historial') {
+                if (APP_STATE.rol === 'tecnico') {
+                    mostrarVistaTecnico();
+                } else {
+                    mostrarVistaUsuario();
+                }
+            }
+            
+            if (tabName === 'analisis') {
+                actualizarAnalisis();
+            }
+            
+            if (tabName === 'recomendaciones') {
+                iniciarRecomendaciones();
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            mostrarUsuariosGuardados();
+            
+            const hoy = new Date();
+            const haceUnMes = new Date();
+            haceUnMes.setMonth(haceUnMes.getMonth() - 1);
+            
+            document.getElementById('fechaDespues').value = hoy.toISOString().split('T')[0];
+            document.getElementById('fechaAntes').value = haceUnMes.toISOString().split('T')[0];
+            
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('password').focus();
+                }
+            });
+            
+            document.getElementById('username').focus();
+            
+            // Inicializar pasos
+            resetearPasos();
+        });
+    </script>
+</body>
+</html>
